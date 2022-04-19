@@ -1,0 +1,31 @@
+{
+  "name": "first-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minhduong070195/nodejs_first_example.git"
+  },
+  "keywords": [
+    "nodejs",
+    "node",
+    "node_first_example"
+  ],
+  "author": "minhduong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minhduong070195/nodejs_first_example/issues"
+  },
+  "homepage": "https://github.com/minhduong070195/nodejs_first_example#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
