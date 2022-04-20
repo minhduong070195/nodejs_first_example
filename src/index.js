@@ -1,26 +1,27 @@
 const express = require('express');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const path = require('path');
-//Loads the handlebars module
 const { engine } = require('express-handlebars');
 const app = express();
-//set up handlebars
-app.engine('hbs', engine({ 
-    extname: '.hbs', 
-    defaultLayout: __dirname +'/resources/views/layouts/main.hbs',
-    // partialsDir   : __dirname +'resources/views/partials',
+const port = 3000;
+
+const route = require('./routes'); // mặc định nạp vào file index
+
+app.engine('hbs', engine({
+    extname: '.hbs',
+    defaultLayout: __dirname + '/resources/views/layouts/main.hbs'
 }));
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, 'resources/views'));
-const port = 3000;
-// http logger
-app.use(morgan('combined'));
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.render('home')
-});
+// Route init
+route(app);
+
+// app.use(morgan('combined'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 });
