@@ -1,0 +1,18 @@
+<div class="mt-4">
+    <div class="row">
+        <div class="col-lg-3">
+            <button>Tìm hiểu</button>
+        </div>
+        <div class="col-lg-9">
+            <h2>Mời {{ user.name }} xem video</h2>
+            
+            <iframe width="500" height="300" src="https://www.youtube.com/embed/{{user.videoId}}" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+            <p>{{ user.phone }}</p>
+        </div>
+    </div>
+</div>
