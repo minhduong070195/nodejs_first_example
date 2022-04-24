@@ -29,11 +29,25 @@ class UserController {
         formData.videoId = formData.video_id;
         const user = new User(formData);
         user.save()
-            .then(() => res.redirect('/'))
+            .then(() => res.redirect('/me/stored'))
             .catch(error => {
 
             });
     }
+
+    // [POST] /handle-form-actions
+    handleFormActions(req, res, next) {
+        switch (req.body.action) {
+            case 'delete':
+                User.delete({ _id: { $in: req.body.userIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                break;
+            default:
+                res.json({ message: 'Action is invalid' });
+        }
+    }
+
 }
 
 module.exports = new UserController();

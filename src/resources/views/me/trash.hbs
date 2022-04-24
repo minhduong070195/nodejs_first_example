@@ -1,0 +1,97 @@
+<div class="mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <h3>Khóa học đã xóa</h3>
+        </div>
+        <div class="col-md-3 navbar-nav ml-auto">
+            <a href="/me/stored" class="btn btn-info">Danh sách người dùng</a>
+        </div>
+    </div>
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Tuổi</th>
+                <th scope="col">Thời gian xóa</th>
+                <th scope="col">Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{ this.name }}</td>
+                <td>{{ this.phone }}</td>
+                <td>{{ this.age }}</td>
+                <td>{{ this.deletedAt }}</td>
+                <td>
+                    <a href="" class="btn btn-primary btn-restore" data-id="{{this._id}}">Khôi phục</a>
+                    <a href="" class="btn btn-danger" data-id="{{this._id}}" data-toggle="modal" data-target="#delete-user-modal">Xóa vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Thùng rác trống
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+
+ {{!-- Confirm delete user --}}
+<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xóa người dùng</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hành động này sẽ xóa vĩnh viễn người dùng. Chắc chưa ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+        <button type="button" id="btn-delete-user" class="btn btn-danger">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- delete form  --}}
+<form method="POST" name="delete-user-form"></form>
+{{!-- restore form --}}
+<form method="POST" name="restore-user-form"></form>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function(){
+        var idUser;
+        var deleteForm = document.forms['delete-user-form'];
+        var restoreForm = document.forms['restore-user-form'];
+        var btnRestore = $('.btn-restore');
+
+        $('#delete-user-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            idUser = button.data('id');
+        });
+
+        $('#btn-delete-user').click(function(){
+            deleteForm.action = '/me/delete/' + idUser + '/force?_method=DELETE';
+            deleteForm.submit();
+        })
+
+        btnRestore.click(function(e){
+            e.preventDefault();
+            idUser = $(this).data('id');
+            restoreForm.action = '/me/restore/' + idUser + '?_method=PATCH';
+            restoreForm.submit();
+        })
+
+    });
+</script>

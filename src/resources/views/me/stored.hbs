@@ -1,0 +1,145 @@
+<form class="mt-4" name="container-form" method="POST" action="/user/handle-form-actions">
+    <div class="row">
+        <div class="col-md-11">
+            <h3>Khóa học của tôi</h3>
+        </div>
+        <div class="col-md-1 navbar-nav ml-auto">
+            <a href="/me/trash" class="btn btn-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg>({{deleteCount}})
+            </a>
+        </div>
+    </div>
+    <div class="mt-4 d-flex align-items-center">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+            <label class="form-check-label" for="checkbox-all">Chọn tất cả</label>
+        </div>
+        <div class="checkbox-select-all-option">
+            <select class="form-control form-control-sm" name="action" required>
+                <option value="">--Hành động--</option>
+                <option value="delete">Xóa</option>
+            </select>
+        </div>
+        <button class="btn btn-primary btn-sm check-all-submit-btn disabled">Áp dụng</button>
+    </div>
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th scope="col">#</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Tuổi</th>
+                <th scope="col">Ngày tạo</th>
+                <th scope="col">Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+            <tr>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" name="userIds[]" type="checkbox" value="{{this._id}}" >
+                    </div>
+                </td>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{ this.name }}</td>
+                <td>{{ this.phone }}</td>
+                <td>{{ this.age }}</td>
+                <td>{{ this.createdAt }}</td>
+                <td>
+                    <a href="edit/{{this._id}}" class="btn btn-primary">Sửa</a>
+                    <a href="" class="btn btn-danger" data-id="{{this._id}}" data-toggle="modal" data-target="#delete-user-modal">Xóa</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Không có người dùng nào được tìm thấy !
+                    <a href="/user/create"> Tạo người dùng mới</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+
+ {{!-- Confirm delete user --}}
+<form class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xóa người dùng</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc muốn xóa chứ ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+        <button type="button" id="btn-delete-user" class="btn btn-danger">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+{{!-- delete hidden form  --}}
+<form method="POST" name="delete-user-form"></form>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function(){
+        var idUser;
+        var deleteForm = document.forms['delete-user-form'];
+        var containerForm = document.forms['container-form']
+        var checkboxAll = $('#checkbox-all');
+        var userItemCheckbox = $('input[name="userIds[]"]');
+        var checkAllSubmitBtn = $('.check-all-submit-btn');
+
+        $('#delete-user-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            idUser = button.data('id');
+        });
+
+        $('#btn-delete-user').click(function(){
+            deleteForm.action = '/me/delete/' + idUser + '?_method=DELETE';
+            deleteForm.submit();
+        })
+
+        // check all => child item check
+        checkboxAll.change(function(){
+            var isCheckedAll = $(this).prop('checked');
+            userItemCheckbox.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        })
+
+        // child item not check => check all not check
+        userItemCheckbox.change(function(){
+            var isCheckedAll = userItemCheckbox.length === $('input[name="userIds[]"]:checked').length;
+            checkboxAll.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        })
+
+        checkAllSubmitBtn.on('submit', function(e){
+            var isSubmitable = !$(this).hasClass('disabled');
+            if(!isSubmitable){
+                e.preventDefault();
+            }
+        });
+
+        // Re-render check all submit button
+        function renderCheckAllSubmitBtn(){
+            var checkedCount = $('input[name="userIds[]"]:checked').length;
+            if(checkedCount){
+                checkAllSubmitBtn.removeClass('disabled');
+            }else{
+                checkAllSubmitBtn.addClass('disabled');
+            }
+        }
+    });
+</script>
